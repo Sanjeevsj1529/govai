@@ -499,9 +499,10 @@ DIST_DIR = Path(__file__).resolve().parent / "dist"
 
 @app.post("/reset", response_model=SimulationSnapshot)
 @app.post("/api/reset", response_model=SimulationSnapshot)
-def reset_simulation(request: ResetRequest) -> dict[str, Any]:
+def reset_simulation(request: ResetRequest | None = None) -> dict[str, Any]:
     try:
-        return service.reset(request.resolved_task_type())
+        resolved_request = request or ResetRequest()
+        return service.reset(resolved_request.resolved_task_type())
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Reset failed: {exc}") from exc
 
