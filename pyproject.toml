@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-server = "main:serve"
+server = "main:main"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]

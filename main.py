@@ -503,6 +503,10 @@ def serve() -> None:
     uvicorn.run("main:app", host="0.0.0.0", port=8000)
 
 
+def main() -> None:
+    serve()
+
+
 @app.post("/reset", response_model=SimulationSnapshot)
 @app.post("/api/reset", response_model=SimulationSnapshot)
 def reset_simulation(request: ResetRequest | None = None) -> dict[str, Any]:
