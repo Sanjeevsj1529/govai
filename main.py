@@ -497,6 +497,12 @@ service = SimulationService()
 DIST_DIR = Path(__file__).resolve().parent / "dist"
 
 
+def serve() -> None:
+    import uvicorn
+
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
+
+
 @app.post("/reset", response_model=SimulationSnapshot)
 @app.post("/api/reset", response_model=SimulationSnapshot)
 def reset_simulation(request: ResetRequest | None = None) -> dict[str, Any]:
