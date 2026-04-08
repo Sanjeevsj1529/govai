@@ -1,0 +1,12 @@
+.vercel
+node_modules/
+dist/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+*.err
+.env
+.env.*
+venv/
+.venv/

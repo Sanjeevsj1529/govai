@@ -1,0 +1,65 @@
+name: GovtAI Ops
+description: >
+  Real-world government operations environment where an agent allocates public-sector tasks
+  across employees, reduces delays, balances workload, and responds to dynamic incoming work.
+environment:
+  id: govtai-ops-v1
+  type: discrete-control
+observation_space:
+  type: object
+  fields:
+    pending_tasks:
+      type: integer
+      description: Number of unfinished tasks still pending or in progress.
+    delayed_tasks:
+      type: integer
+      description: Number of tasks that missed their deadline.
+    high_priority_tasks:
+      type: integer
+      description: Number of unfinished high-priority tasks.
+    avg_workload:
+      type: number
+      description: Average active workload across employees.
+    idle_employees:
+      type: integer
+      description: Number of employees with no assigned work.
+action_space:
+  type: discrete
+  size: 4
+  actions:
+    0: assign_best
+    1: assign_least_busy
+    2: reassign
+    3: prioritize_urgent
+tasks:
+  - name: easy
+    objective: Maximize completion on a small, stable workload.
+    description: Small number of tasks with low volatility; emphasizes completion.
+  - name: medium
+    objective: Reduce delays and balance workload under moderate load.
+    description: Moderate backlog with some incoming tasks; emphasizes delay control and balance.
+  - name: hard
+    objective: Handle overload and prioritize urgent work under dynamic arrivals.
+    description: Dynamic incoming tasks create sustained pressure and urgent routing decisions.
+reward:
+  description: >
+    Continuous reward shaping: +10 task completion, +5 early completion, +1 progress,
+    -5 idle employee, -10 delay, -20 repeated bad decisions or loops.
+evaluation:
+  metrics:
+    - completion_rate
+    - delay_ratio
+    - workload_balance
+    - total_reward
+  grader:
+    formula: "0.5 * completion_rate + 0.3 * (1 - delay_ratio) + 0.2 * workload_balance"
+    clamp: [0.0, 1.0]
+    labels:
+      poor: "< 0.40"
+      average: "0.40 - 0.60"
+      good: "0.60 - 0.80"
+      optimal: "> 0.80"
+api:
+  reset: POST /reset
+  step: POST /step
+  state: GET /state
