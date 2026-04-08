@@ -1,3 +1,13 @@
+---
+title: GovtAI Ops
+emoji: "\ud83c\udfe2"
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8000
+pinned: false
+---
+
 # GovtAI Ops
 
 GovtAI Ops is a real-world OpenEnv hackathon environment for government task allocation. It simulates a public-sector operations desk where tasks arrive over time, employees have different skill levels, deadlines matter, and an AI policy must assign, prioritize, and rebalance work without breaking throughput.
