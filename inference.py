@@ -4,6 +4,8 @@ from typing import Any
 
 from env.gov_env import GovEnv
 
+_VALIDATOR_OUTPUT_EMITTED = False
+
 
 def run_openenv_demo() -> list[dict[str, Any]]:
     env = GovEnv(seed=42)
@@ -29,6 +31,8 @@ def run_openenv_demo() -> list[dict[str, Any]]:
 
 
 def emit_validator_blocks(episodes: list[dict[str, Any]]) -> None:
+    global _VALIDATOR_OUTPUT_EMITTED
+    _VALIDATOR_OUTPUT_EMITTED = True
     overall_score = sum(float(episode["reward"]) for episode in episodes) / max(1, len(episodes))
     print("[START] task=govai", flush=True)
     print(f"[STEP] step=1 reward={overall_score:.4f}", flush=True)
@@ -45,6 +49,11 @@ def emit_validator_blocks(episodes: list[dict[str, Any]]) -> None:
 
 
 def main() -> None:
+    if not _VALIDATOR_OUTPUT_EMITTED:
+        emit_validator_blocks(run_openenv_demo())
+
+
+if __name__ != "__main__":
     emit_validator_blocks(run_openenv_demo())
 
 
