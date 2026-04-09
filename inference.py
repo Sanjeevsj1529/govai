@@ -58,12 +58,12 @@ def emit_validator_blocks(episodes: list[dict[str, Any]]) -> None:
         reward = float(episode["reward"])
         action = episode["action"]
 
-        print(f"[START] task={task_id}", flush=True)
+        print(f"[START]task={task_id}", flush=True)
         print(
-            f"[STEP] step=1 reward={reward:.4f} done={str(bool(episode['done'])).lower()} action={json.dumps(action, separators=(',', ':'))}",
+            f"[STEP]step=1 reward={reward:.4f} done={str(bool(episode['done'])).lower()} action={json.dumps(action, separators=(',', ':'))}",
             flush=True,
         )
-        print(f"[END] task={task_id} score={reward:.4f} steps=1", flush=True)
+        print(f"[END]task={task_id} score={reward:.4f} steps=1", flush=True)
 
 
 def main() -> None:
