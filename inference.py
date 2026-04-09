@@ -29,6 +29,11 @@ def run_openenv_demo() -> list[dict[str, Any]]:
 
 
 def emit_validator_blocks(episodes: list[dict[str, Any]]) -> None:
+    overall_score = sum(float(episode["reward"]) for episode in episodes) / max(1, len(episodes))
+    print("[START] task=govai", flush=True)
+    print(f"[STEP] step=1 reward={overall_score:.4f}", flush=True)
+    print(f"[END] task=govai score={overall_score:.4f} steps=1", flush=True)
+
     for episode in episodes:
         task_id = str(episode["task_id"])
         reward = float(episode["reward"])
