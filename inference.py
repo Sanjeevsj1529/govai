@@ -1,32 +1,8 @@
 from __future__ import annotations
 
-import json
-import sys
 from typing import Any
 
-from agent import GovtAgent
 from env.gov_env import GovEnv
-
-
-agent = GovtAgent()
-
-
-def _state_from_observation(observation: dict[str, Any]) -> list[float]:
-    return [
-        float(observation.get("pending_tasks", 0)),
-        float(observation.get("delayed_tasks", 0)),
-        float(observation.get("high_priority_tasks", 0)),
-        float(observation.get("avg_workload", 0.0)),
-        float(observation.get("idle_employees", 0)),
-    ]
-
-
-def infer(observation: dict[str, Any]) -> int:
-    return agent.select_action(_state_from_observation(observation))
-
-
-def predict(observation: dict[str, Any]) -> int:
-    return infer(observation)
 
 
 def run_openenv_demo() -> list[dict[str, Any]]:
@@ -56,14 +32,11 @@ def emit_validator_blocks(episodes: list[dict[str, Any]]) -> None:
     for episode in episodes:
         task_id = str(episode["task_id"])
         reward = float(episode["reward"])
-        action = episode["action"]
 
-        print(f"[START]task={task_id}", flush=True)
-        print(
-            f"[STEP]step=1 reward={reward:.4f} done={str(bool(episode['done'])).lower()} action={json.dumps(action, separators=(',', ':'))}",
-            flush=True,
-        )
-        print(f"[END]task={task_id} score={reward:.4f} steps=1", flush=True)
+        # Emit the simplest possible parser-friendly block format.
+        print(f"[START] task={task_id}", flush=True)
+        print(f"[STEP] step=1 reward={reward:.4f}", flush=True)
+        print(f"[END] task={task_id} score={reward:.4f} steps=1", flush=True)
 
 
 def main() -> None:
