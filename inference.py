@@ -5,6 +5,7 @@ import sys
 from typing import Any
 
 from agent import GovtAgent
+from env.gov_env import GovEnv
 
 
 agent = GovtAgent()
@@ -28,11 +29,41 @@ def predict(observation: dict[str, Any]) -> int:
     return infer(observation)
 
 
+def run_openenv_demo() -> list[dict[str, Any]]:
+    env = GovEnv(seed=42)
+    episodes: list[dict[str, Any]] = []
+
+    for task_id in ("complaint_task", "policy_task", "budget_task"):
+        state = env.reset(task_id=task_id)
+        action = env.sample_action()
+        next_state, reward, done, info = env.step(action)
+        episodes.append(
+            {
+                "task_id": task_id,
+                "state": state,
+                "action": action,
+                "next_state": next_state,
+                "reward": reward,
+                "done": done,
+                "info": info,
+            }
+        )
+
+    return episodes
+
+
 def main() -> None:
-    payload = json.load(sys.stdin) if not sys.stdin.isatty() else {}
-    observation = payload.get("observation", payload)
-    action = infer(observation if isinstance(observation, dict) else {})
-    json.dump({"action": action}, sys.stdout)
+    if not sys.stdin.isatty():
+        raw_payload = sys.stdin.read()
+        if raw_payload.strip():
+            payload = json.loads(raw_payload)
+            observation = payload.get("observation", payload)
+            action = infer(observation if isinstance(observation, dict) else {})
+            json.dump({"action": action}, sys.stdout)
+            return
+
+    json.dump({"episodes": run_openenv_demo()}, sys.stdout, indent=2)
+    sys.stdout.write("\n")
 
 
 if __name__ == "__main__":

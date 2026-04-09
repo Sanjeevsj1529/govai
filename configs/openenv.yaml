@@ -1,0 +1,9 @@
+id: govai
+entrypoint: env.gov_env:GovEnv
+tasks:
+  - id: complaint_task
+    grader: graders.complaint_grader:grade_complaint
+  - id: policy_task
+    grader: graders.policy_grader:grade_policy
+  - id: budget_task
+    grader: graders.budget_grader:grade_budget

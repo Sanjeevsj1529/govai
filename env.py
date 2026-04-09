@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import random
 from collections import deque
+from pathlib import Path
 
 from models import Employee, EnvironmentState, Task
 from reward import RewardBreakdown, calculate_reward
@@ -39,6 +40,9 @@ MODE_CONFIG = {
         "objective": "Handle dynamic incoming tasks, overload, and urgent prioritization.",
     },
 }
+
+# Allow `env.gov_env` to coexist with this legacy `env.py` module.
+__path__ = [str(Path(__file__).with_name("env"))]
 
 
 class GovtEnv:
