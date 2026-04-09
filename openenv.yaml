@@ -1,3 +1,12 @@
+id: govai
+entrypoint: env.gov_env:GovEnv
+tasks:
+  - id: complaint_task
+    grader: graders.complaint_grader:grade_complaint
+  - id: policy_task
+    grader: graders.policy_grader:grade_policy
+  - id: budget_task
+    grader: graders.budget_grader:grade_budget
 name: GovtAI Ops
 description: >
   Real-world government operations environment where an agent allocates public-sector tasks
@@ -31,16 +40,6 @@ action_space:
     1: assign_least_busy
     2: reassign
     3: prioritize_urgent
-tasks:
-  - name: easy
-    objective: Maximize completion on a small, stable workload.
-    description: Small number of tasks with low volatility; emphasizes completion.
-  - name: medium
-    objective: Reduce delays and balance workload under moderate load.
-    description: Moderate backlog with some incoming tasks; emphasizes delay control and balance.
-  - name: hard
-    objective: Handle overload and prioritize urgent work under dynamic arrivals.
-    description: Dynamic incoming tasks create sustained pressure and urgent routing decisions.
 reward:
   description: >
     Continuous reward shaping: +10 task completion, +5 early completion, +1 progress,
@@ -51,14 +50,6 @@ evaluation:
     - delay_ratio
     - workload_balance
     - total_reward
-  grader:
-    formula: "0.5 * completion_rate + 0.3 * (1 - delay_ratio) + 0.2 * workload_balance"
-    clamp: [0.0, 1.0]
-    labels:
-      poor: "< 0.40"
-      average: "0.40 - 0.60"
-      good: "0.60 - 0.80"
-      optimal: "> 0.80"
 api:
   reset: POST /reset
   step: POST /step

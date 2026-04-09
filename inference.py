@@ -67,15 +67,6 @@ def emit_validator_blocks(episodes: list[dict[str, Any]]) -> None:
 
 
 def main() -> None:
-    if not sys.stdin.isatty():
-        raw_payload = sys.stdin.read()
-        if raw_payload.strip():
-            payload = json.loads(raw_payload)
-            observation = payload.get("observation", payload)
-            action = infer(observation if isinstance(observation, dict) else {})
-            json.dump({"action": action}, sys.stdout)
-            return
-
     emit_validator_blocks(run_openenv_demo())
 
 
