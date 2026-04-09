@@ -52,6 +52,20 @@ def run_openenv_demo() -> list[dict[str, Any]]:
     return episodes
 
 
+def emit_validator_blocks(episodes: list[dict[str, Any]]) -> None:
+    for episode in episodes:
+        task_id = str(episode["task_id"])
+        reward = float(episode["reward"])
+        action = episode["action"]
+
+        print(f"[START] task={task_id}", flush=True)
+        print(
+            f"[STEP] step=1 reward={reward:.4f} done={str(bool(episode['done'])).lower()} action={json.dumps(action, separators=(',', ':'))}",
+            flush=True,
+        )
+        print(f"[END] task={task_id} score={reward:.4f} steps=1", flush=True)
+
+
 def main() -> None:
     if not sys.stdin.isatty():
         raw_payload = sys.stdin.read()
@@ -62,8 +76,7 @@ def main() -> None:
             json.dump({"action": action}, sys.stdout)
             return
 
-    json.dump({"episodes": run_openenv_demo()}, sys.stdout, indent=2)
-    sys.stdout.write("\n")
+    emit_validator_blocks(run_openenv_demo())
 
 
 if __name__ == "__main__":
