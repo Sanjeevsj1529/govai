@@ -230,10 +230,13 @@ function localRefreshEmployees(env) {
 }
 
 function localPickAction(observation) {
-  if (observation.delayed_tasks > 0) return { action_id: 2, action_name: "reassign" };
-  if (observation.high_priority_tasks > 0) return { action_id: 3, action_name: "prioritize_urgent" };
-  if (observation.idle_employees > 0) return { action_id: 1, action_name: "assign_least_busy" };
-  return { action_id: 0, action_name: "assign_best" };
+  if (observation.delayed_tasks > 0)
+    return { action_id: 2, action_name: "reassign", reason: `Action ID: 2 | Reason: ${observation.delayed_tasks} delayed task(s) detected — reassigning to restore SLA compliance.` };
+  if (observation.high_priority_tasks > 0)
+    return { action_id: 3, action_name: "prioritize_urgent", reason: `Action ID: 3 | Reason: ${observation.high_priority_tasks} high-priority task(s) in queue — escalating urgency.` };
+  if (observation.idle_employees > 0)
+    return { action_id: 1, action_name: "assign_least_busy", reason: `Action ID: 1 | Reason: ${observation.idle_employees} idle employee(s) available — distributing backlog by least-busy.` };
+  return { action_id: 0, action_name: "assign_best", reason: "Action ID: 0 | Reason: Steady state — routing to best-skilled employee." };
 }
 
 function localTargetLoad(employee) {
@@ -451,6 +454,7 @@ function localSnapshot(env, reward = 0, rewardReason = "Environment reset.", act
   const observation = localObserve(env);
   const metrics = localMetrics(env);
   metrics.reward = reward;
+  const actionReason = action.reason || `Action ID: ${action.action_id ?? "-"} | Reason: ${action.action_name?.replace(/_/g, " ") ?? "Initializing decision engine"}`;
   return {
     mode: env.mode,
     task_type: env.mode,
@@ -460,11 +464,11 @@ function localSnapshot(env, reward = 0, rewardReason = "Environment reset.", act
     observation,
     reward: { value: reward, reason: rewardReason },
     action,
-    info: { objective: metrics.objective, last_action_reason: "Local fallback simulation is active." },
+    info: { objective: metrics.objective, last_action_reason: actionReason },
     metrics,
     grader: metrics.grader,
     logs: [
-      `Step ${env.timeStep}: ${action.action_name}`,
+      `Step ${env.timeStep}: ${action.action_name} — ${actionReason}`,
       ...initialLogs,
     ].slice(0, 10),
     chartData: [{ tick: "00", tasks: 0 }, ...Array.from({ length: env.timeStep }, (_, index) => ({
@@ -510,7 +514,8 @@ function localStep(env) {
   localRefreshEmployees(env);
   const idle = env.employees.filter((employee) => employee.workload === 0).length;
   const reward = progress.completed * 10 + progress.early * 5 + progress.progress - idle * 5 - delays * 10;
-  return localSnapshot(env, reward, "Local fallback step executed.", action);
+  const rewardReason = `Completed: ${progress.completed}, Early: ${progress.early}, Progress: ${progress.progress}, Idle: ${idle}, New delays: ${delays}`;
+  return localSnapshot(env, reward, rewardReason, action);
 }
 
 function createInitialState(mode = "medium") {
@@ -1199,7 +1204,7 @@ export default function App() {
             </GlassPanel>
 
             <div className="right-panel__subgrid">
-              <GlassPanel title="AI Decision Log" subtitle="Live decision visibility.">
+              <GlassPanel title="LLM Decision Output" subtitle="Live decision engine visibility.">
                 <div className="decision-summary"><Bot className="h-4 w-4" /><span>{sim.actionDescription}</span></div>
                 <div className="decision-log">
                   {sim.logs.map((entry, index) => <DecisionItem key={`${entry}-${index}`} index={index} currentStep={sim.step} entry={entry} />)}

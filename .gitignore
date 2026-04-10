@@ -1,12 +1,47 @@
-.vercel
+# Dependencies
 node_modules/
+venv/
+.venv/
+
+# Build output
 dist/
+
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
+
+# Logs
 *.log
 *.err
+lt_final.log
+lt_final_err.log
+lt_new.log
+lt_preview.log
+lt_preview_err.log
+lt_share.log
+lt_share_err.log
+tunnel_final.log
+tunnel_final_err.log
+tunnel_fresh.log
+tunnel_fresh_err.log
+preview_share.log
+preview_share_err.log
+pinggy.log
+pinggy_err.log
+
+# Environment / secrets
 .env
 .env.*
-venv/
-.venv/
+
+# IDE
+.vercel
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# UV
+uv.lock

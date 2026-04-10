@@ -147,7 +147,7 @@ class SimulationService:
         self.last_action = "Awaiting simulation start"
         self.last_action_id: int | None = None
         self.last_action_name = "awaiting_start"
-        self.last_action_reason = "The AI will explain its routing decision after the first step."
+        self.last_action_reason = "Awaiting LLM response for initial strategy..."
         self.done = False
         self.comparison_cache: dict[str, dict[str, Any]] = {}
 
@@ -159,8 +159,10 @@ class SimulationService:
         self.logs = [
             f"Simulation started for the {mode.title()} task",
             "Government office environment initialized",
-            "AI agent ready for task routing",
+            "LLM Decision Engine (gpt-4o-mini) active",
         ]
+        self.last_action_reason = "Initializing decision engine..."
+        print("Backend: Resetting simulation and initializing LLM agent.")
         self.chart_data = [{"tick": "00", "tasks": 0}]
         self.last_reward_value = 0.0
         self.last_reward_reason = "Environment reset."
@@ -202,8 +204,9 @@ class SimulationService:
 
         debug_log = (
             f"Step {info['time_step']}: {self.last_action} | reward={reward:.1f} | "
-            f"{self.last_action_reason}"
+            f"[LLM Decision Output]: {self.last_action_reason}"
         )
+        print(f"Backend: {debug_log}")
         self.logs = [debug_log, *self.logs][:12]
         self.chart_data.append({"tick": f"{info['time_step']:02d}", "tasks": self._completed_tasks()})
         self.chart_data = self.chart_data[-12:]
