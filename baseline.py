@@ -172,6 +172,8 @@ def compare_baseline_vs_ai(
 
     ai_env = GovtEnv(mode=mode, seed=seed)
     ai_agent = GovtAgent()
+    # Use heuristic for the comparison simulation to avoid blocking the backend with synchronous LLM calls
+    ai_agent.get_llm_decision = lambda state: GovtAgent._heuristic_decision(state)
     ai_metrics = run_agent_simulation(ai_env, ai_agent, max_steps=max_steps)
 
     if baseline_metrics["efficiency"] >= ai_metrics["efficiency"]:
