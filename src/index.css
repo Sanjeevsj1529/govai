@@ -271,3 +271,63 @@ body {
   .topbar { padding: 18px; align-items: start; flex-direction: column; }
   .page-title { font-size: 1.65rem; }
 }
+
+/* ── AI Engine Label & Tagline ── */
+.ai-engine-header {
+  display: flex; flex-direction: column; gap: 2px; margin-bottom: 12px;
+}
+.ai-engine-label {
+  font-weight: 700; font-size: 0.95rem; color: var(--accent); letter-spacing: 0.01em;
+}
+.ai-engine-tagline {
+  font-size: 0.8rem; color: var(--muted); font-style: italic;
+}
+
+/* ── Structured Decision Card ── */
+.structured-decision {
+  display: grid; gap: 10px; padding: 14px 16px; border-radius: 14px;
+  border: 1px solid var(--border); background: var(--accent-soft); margin-bottom: 12px;
+}
+.structured-decision__header {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+}
+.structured-decision__action-label {
+  font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
+}
+.structured-decision__action {
+  margin: 0; font-weight: 700; font-size: 1rem; color: var(--text);
+}
+.structured-decision__section {
+  display: grid; gap: 2px;
+}
+.structured-decision__section-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted);
+}
+.structured-decision__section-text {
+  margin: 0; font-size: 0.88rem; line-height: 1.5; color: var(--text);
+}
+
+/* ── Confidence Badge ── */
+.confidence-badge {
+  display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px;
+  font-size: 0.75rem; font-weight: 700; border: 1px solid currentColor; white-space: nowrap;
+}
+.confidence-badge--good { color: var(--good); background: rgba(21, 128, 61, 0.08); }
+.confidence-badge--warn { color: var(--warn); background: rgba(180, 83, 9, 0.08); }
+.confidence-badge--bad  { color: var(--bad);  background: rgba(185, 28, 28, 0.08); }
+
+/* ── Comparison Banner ── */
+.comparison-banner {
+  padding: 10px 14px; border-radius: 12px; margin-bottom: 12px;
+  background: var(--accent-soft); color: var(--text); font-size: 0.88rem; line-height: 1.5;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.comparison-banner strong { color: var(--accent); }
+
+/* ── Dark-mode overrides for new elements ── */
+.theme-dark .structured-decision__action,
+.theme-dark .structured-decision__section-text {
+  color: #edf2f7;
+}
+.theme-dark .comparison-banner { color: #edf2f7; }
+

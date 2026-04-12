@@ -55,9 +55,18 @@ class GovtAgent:
 
         try:
             prompt = (
-                f"System state (pending, delayed, high_priority, workload, idle): {state}. "
-                "Actions: 0:assign_best, 1:assign_least_busy, 2:reassign, 3:prioritize_urgent. "
-                "Respond ONLY as: 'Action ID: [0-3] | Reason: [one-line description]'"
+                f"System state (pending={state[0] if len(state)>0 else 0}, "
+                f"delayed={state[1] if len(state)>1 else 0}, "
+                f"high_priority={state[2] if len(state)>2 else 0}, "
+                f"avg_workload={state[3] if len(state)>3 else 0:.2f}, "
+                f"idle_employees={state[4] if len(state)>4 else 0}). "
+                "Available actions: 0:assign_best, 1:assign_least_busy, 2:reassign, 3:prioritize_urgent. "
+                "Respond STRICTLY in this format (no extra text):\n"
+                "Action ID: [0-3]\n"
+                "Recommended Action: <action name>\n"
+                "Reasoning: <one clear sentence explaining why>\n"
+                "Impact: <one measurable benefit>\n"
+                "Confidence Score: <0-100>%"
             )
 
             response = client.chat.completions.create(
@@ -65,8 +74,8 @@ class GovtAgent:
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are an AI optimizing government task allocation. "
-                                   "Always reply in the exact format requested.",
+                        "content": "You are an expert AI optimizing government task allocation. "
+                                   "Always reply ONLY in the exact structured format requested, nothing else.",
                     },
                     {"role": "user", "content": prompt},
                 ],
@@ -83,7 +92,14 @@ class GovtAgent:
             error_msg = f"LLM Error: {e}"
             print(f"DEBUG: {error_msg}", flush=True)
             logger.error(error_msg)
-            return f"Action ID: 1 | Reason: {error_msg}"
+            # Return structured fallback so the UI never shows raw errors
+            return (
+                f"Action ID: 1\n"
+                f"Recommended Action: assign_least_busy\n"
+                f"Reasoning: LLM unavailable — using fallback logic based on current queue state.\n"
+                f"Impact: Ensures tasks continue flowing without interruption.\n"
+                f"Confidence Score: 60%"
+            )
 
     # ------------------------------------------------------------------ #
     #  Heuristic fallback (when proxy is not configured)
@@ -98,12 +114,36 @@ class GovtAgent:
             state[4] if len(state) > 4 else 0,
         )
         if delayed > 0:
-            return "Action ID: 2 | Reason: Delayed tasks detected — reassigning to restore SLA compliance."
+            return (
+                "Action ID: 2\n"
+                "Recommended Action: reassign\n"
+                f"Reasoning: {int(delayed)} delayed task(s) detected — reassigning to restore SLA compliance.\n"
+                "Impact: Reduces backlog delay and restores on-time delivery rate.\n"
+                "Confidence Score: 85%"
+            )
         if high_pri > 0:
-            return "Action ID: 3 | Reason: High-priority tasks in queue — escalating urgency."
+            return (
+                "Action ID: 3\n"
+                "Recommended Action: prioritize_urgent\n"
+                f"Reasoning: {int(high_pri)} high-priority task(s) in queue — escalating urgency.\n"
+                "Impact: Fast-tracks critical civic-service cases to meet strict deadlines.\n"
+                "Confidence Score: 90%"
+            )
         if idle > 0:
-            return "Action ID: 1 | Reason: Idle employees available — distributing backlog by least-busy."
-        return "Action ID: 0 | Reason: Steady state — routing to best-skilled employee."
+            return (
+                "Action ID: 1\n"
+                "Recommended Action: assign_least_busy\n"
+                f"Reasoning: {int(idle)} idle employee(s) available — distributing backlog by least-busy.\n"
+                "Impact: Improves workload balance and reduces idle capacity waste.\n"
+                "Confidence Score: 88%"
+            )
+        return (
+            "Action ID: 0\n"
+            "Recommended Action: assign_best\n"
+            "Reasoning: Steady state — routing tasks to the best-skilled available employee.\n"
+            "Impact: Maximises task completion quality and throughput efficiency.\n"
+            "Confidence Score: 82%"
+        )
 
     # ------------------------------------------------------------------ #
     #  Action selection
