@@ -8,7 +8,7 @@
 [![React](https://img.shields.io/badge/React-18-61DAFB)](https://react.dev)
 [![OpenEnv](https://img.shields.io/badge/OpenEnv-Validated-brightgreen)](https://openenv.ai)
 
----
+--
 
 ## 🚨 The Problem
 
